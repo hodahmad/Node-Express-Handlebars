@@ -1,39 +1,31 @@
-/*
--------------------------------------------------------------------------------
-Set up a connection to MySQL database and export the connection object
--------------------------------------------------------------------------------
-*/
+// Pull in required dependencies
+var mysql = require('mysql');
 
-'use strict';
+// Create the MySQL connection object
+var connection;
 
-require('dotenv').config();
-const mysql = require('mysql');
-
-// Set up connection parameters
-const local = {
-  host: 'localhost',
-  port: process.env.PORT || 3306,
-  user: process.env.MYSQL_USER,        // in .env file
-  password: process.env.MYSQL_PASSWD,  // in .env file
-  database: 'burgers_db'
+if (process.env.JAWSDB_URL) {
+	// DB is JawsDB on Heroku
+	connection = mysql.createConnection(process.env.JAWSDB_URL);
+} else {
+	// DB is local on localhost
+	connection = mysql.createConnection({
+		port: 3306,
+		host: 'localhost',
+		user: 'root',
+		password: 'Skrakero777*',
+		database: 'burgers_db'
+	})
 };
 
-// const cleardb = process.env.CLEARDB_DATABASE_URL;
-// const connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL);
-
-const jawsdb = process.env.DATABASE_URL;
-const connParams = (process.env.DATABASE_URL) ? jawsdb : local;
-const connection = mysql.createConnection(connParams);
-
-// Attempt to connecto to the database
-connection.connect(error => {
-  if (error) {
-    console.error('ERROR: Unable to make a connection' + error.stack);
+// Make the connection to MySQL
+connection.connect(function(err) {
+  if (err) {
+    console.error('ERROR: MySQL connection error -- ' + err.stack + '\n\n');
     return;
   }
-   
-  console.log('Connected to database as ID: ' + connection.threadId);
+  console.log('Connected to MySQL database as id ' + connection.threadId + '\n\n');
 });
 
-// Export the connection
+// Export connection for ORM use
 module.exports = connection;

@@ -1,46 +1,29 @@
+// Import the ORM to implement functions that will interact with the database
+var orm = require('../config/orm.js');
 
-/*
--------------------------------------------------------------------------------
-A model for the burger app data
--------------------------------------------------------------------------------
-*/
+// Create the burger object
+var burger = {
+  // Select all burger table entries
+  selectAll: function(cb) {
+    orm.selectAll('burgers', function(res) {
+      cb(res);
+    });
+  },
 
-'use strict';
+  // The variables cols and vals are arrays
+  insertOne: function(cols, vals, cb) {
+    orm.insertOne('burgers', cols, vals, function(res) {
+      cb(res);
+    });
+  },
 
-const orm = require('../config/orm');
+  // The objColVals is an object specifying columns as object keys with associated values
+  updateOne: function(objColVals, condition, cb) {
+    orm.updateOne('burgers', objColVals, condition, function(res) {
+      cb(res);
+    });
+  }
+};
 
-class Burger {
-  constructor(database = orm) {
-    this.db = database;
-  }
-  
-  //
-  // Show all burgers currently in the database
-  //
-  list() {
-    return this.db.selectAll();
-  }
-  
-  //
-  // Add a new burger into the database
-  //
-  add(burger) {
-    return this.db.insertOne(burger);
-  }
-  
-  //
-  // Devour a burger with the "id"
-  //
-  devour(id, data = { devoured: true }) {
-    return this.db.updateOne(id, data);
-  }
-  
-  //
-  // Delete a burger with the "id"
-  //
-  delete(id, data = {}) {
-    return this.db.deleteOne(id, data);
-  }
-}
-
-module.exports = new Burger();
+// Export the database functions for the controller (burgerController.js).
+module.exports = burger;
